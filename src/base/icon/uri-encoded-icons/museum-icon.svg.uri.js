@@ -1,0 +1,1 @@
+const svg = 'data:image/svg+xml,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 94.907\' version=\'1.0\'%3e%3cpath d=\'M91.053 80.785V32.18H78.229v48.605h-10.26V32.18H55.145v48.605h-10.26V32.18H32.06v48.605H21.8V32.18H8.976v48.605h-.014L0 94.907l100-.016zM2.549 26.827h94.902L49.998 0z\'/%3e%3c/svg%3e'; export default svg; 

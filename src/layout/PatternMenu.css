@@ -1,0 +1,100 @@
+.close-filter {
+    display: none;
+}
+
+.active-filter {
+    color: #14d014;
+}
+
+.menu-item-message div.content {
+    font-size: 15px;
+}
+
+.ui.message.menu-item-message {
+    display: flex;
+    align-items: baseline;
+    position: absolute;
+    top: 200px;
+    left: 0px;
+    width: 70px;
+    flex-direction: column;
+    padding-left: 15px;
+}
+
+.ui.menu .item.menu-item {
+    padding: 1.5em;
+}
+
+.ui.vertical.menu {
+    width: inherit;
+}
+
+.ui.vertical.menu {
+    width: 100% !important;
+}
+
+.filter-title {
+    font-size: 17px;
+    margin-right: 15px;
+    color: white;
+}
+
+.menu-main {
+    width: 70px;
+    transition: 0.6s;
+}
+
+.menu-main-title {
+    display: inline-block;
+    text-indent: -30px;
+    z-index: -1;
+    position: absolute;
+    transition: 400ms ease-in-out;
+}
+
+.menu-main-title.menu-main-open {
+    transition-delay: 300ms;
+    display: inline-block;
+    z-index: 1;
+    text-indent: 10px;
+}
+
+.menu-main.menu-main-over {
+    /* width: 400px; */
+    /* width: auto; */
+    width: 90%;
+}
+
+.menu-dropdown {
+    display: inline-block;
+    z-index: -1;
+    transition: 400ms ease-in-out;
+    text-indent: -30px;
+}
+
+.menu-dropdown.menu-open-dropdown {
+    transition-delay: 300ms;
+    display: inline-block;
+    z-index: 1;
+    text-indent: 10px;
+}
+
+/* .select-all-checkbox-button:hover {
+    background-color: #002933 !important;
+} */
+
+.select-all-checkbox-button:hover {
+    background-color: #1a3f48 !important;
+}
+
+.ui.vertical.menu .item.menu-item.filter-item-border-top {
+    border-top: 2px solid white;
+    padding-top: 5px;
+    margin-top: 20px;
+}
+
+.layout-item-border-top {
+    border-top: 2px solid white !important;
+    padding-top: 20px !important;
+    margin-top: 15px !important;
+}
