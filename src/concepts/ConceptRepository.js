@@ -23,37 +23,4 @@ export class ConceptRepository {
         );
         return classesWithPatternsAndScores;
     }
-    // async findAllClassesWithCentralityScore() {
-    //     const classesWithCentralityScore = this.genericRepository.fetchByQueryObject(
-    //         this.classQuery.getClassesWithCentralityScore()
-    //     );
-    //     return classesWithCentralityScore;
-    // }
-    // async findClassesWithPatternsTheyBelongsTo() {
-    //     const classesAndPatterns = this.genericRepository.fetchByQueryObject(
-    //         this.classQuery.getClassesWithPatternsTheyBelongsTo()
-    //     );
-    //     return classesAndPatterns;
-    // }
-
-    // async findResourcesByClassWithPatternInstancesTheyBelongsTo(classUri) {
-    //     const resources = this.genericRepository.fetchByQueryObject(
-    //         this.classQuery.getResourcesByClassWithPatternInstancesTheyBelongsTo(
-    //             classUri
-    //         )
-    //     );
-    //     return resources;
-    // }
-    // async findPatternsByClass(classUri) {
-    //     const patterns = this.genericRepository.fetchByQueryObject(
-    //         this.classQuery.getPatternsByClass(classUri)
-    //     );
-    //     return patterns;
-    // }
-    // async findAllPatternInstancesWithTypeByResource(resourceUri) {
-    //     const patternInstances = this.genericRepository.fetchByQueryObject(
-    //         this.classQuery.getPatternInstancesWithTypeByResource(resourceUri)
-    //     );
-    //     return patternInstances;
-    // }
 }

@@ -122,6 +122,8 @@ export class KnowledgeGraphBuilder {
         });
         return kg;
     }
+
+    
     makePatternInstancesListKG({ patternInstances }) {
         let instances = patternInstances;
 
