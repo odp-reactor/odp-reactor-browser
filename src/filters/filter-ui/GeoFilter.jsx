@@ -38,12 +38,13 @@ GeoFilter.defaultProps = {
 const POLYGON_CREATED = 1;
 const SHAPE_DELETED = 2;
 
-export default function GeoFilter({ id = "geo", options = {} }) {
+export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeGraph }) {
     const startDrawFlag = "Start draw";
     const stopDrawFlag = "Stop Draw";
     const [mapUIState, setMapUI] = useState(startDrawFlag);
     const [mapState, setMapState] = useState(null);
     const mapRef = useRef();
+    const groupRef = useRef()
     const editRef = useRef();
 
     const ZOOM_LEVEL = 12;
@@ -77,8 +78,7 @@ export default function GeoFilter({ id = "geo", options = {} }) {
         });
     }
 
-    const { knowledgeGraph } = useKGCtx();
-    const resources = knowledgeGraph.getResources();
+    const resources = filteredKnowledgeGraph.getResources();
 
     let filterAlgorithm;
     const initialFilterOptions = {
@@ -126,6 +126,15 @@ export default function GeoFilter({ id = "geo", options = {} }) {
         if (mapRef.current) {
             const map = mapRef.current.leafletElement;
             const mcg = L.markerClusterGroup();
+
+            // we use this id to remove previous layer and add new one
+            mcg.deleteId = "marker-data-layer-to-replace"
+            map.eachLayer((layer) => {
+                if (layer.deleteId === "marker-data-layer-to-replace") {
+                    map.removeLayer(layer)
+                }
+            })
+
             mcg.clearLayers();
 
             resources.forEach((node) => {
@@ -136,13 +145,47 @@ export default function GeoFilter({ id = "geo", options = {} }) {
                     // .bindPopup(L.popup().setContent(customPopup).setLatLng([node.lat, node.long]))
                 }
             });
-            map.fitBounds(mcg.getBounds(), {
-                padding: [120, 120],
-                maxZoom: 8,
-            });
             map.addLayer(mcg);
+            try {
+                map.fitBounds(mcg.getBounds(), {
+                    padding: [20, 20],
+                    maxZoom: 8,
+                });
+            } catch(e) {
+                console.log(e)
+            }
         }
-    }, [mapRef]);
+    }, [mapRef, filteredKnowledgeGraph]);
+
+    useEffect(()=>{
+
+        // this effect runs when map is elarged or moved back
+        // it recreates virtually the markerclusterlayer with points
+        // and fit the map to virtual layer bounds
+        // thus when you open/close the map it always feet points 
+
+        if (mapRef.current) {
+            const map = mapRef.current.leafletElement;
+            const mcg = L.markerClusterGroup();
+            mcg.clearLayers();
+            resources.forEach((node) => {
+                if (node.lat && node.long) {
+                    L.marker([node.lat, node.long], {
+                        icon: blueMarkerIcon,
+                    }).addTo(mcg);
+                    // .bindPopup(L.popup().setContent(customPopup).setLatLng([node.lat, node.long]))
+                }
+            });
+            try {
+                map.fitBounds(mcg.getBounds(), {
+                    padding: [20, 20],
+                    maxZoom: 8,
+                });
+            } catch(e) {
+                console.log(e)
+            }
+        }
+    }, [enlarged])
 
     const onFilterCreated = (e) => {
         const l = e.layer;
@@ -252,8 +295,19 @@ export default function GeoFilter({ id = "geo", options = {} }) {
         setMapState({ id: SHAPE_DELETED, e: null });
     });
 
+
     return (
-        <div>
+        <div style={{
+            cursor: !enlarged ? "pointer" : ""
+        }}
+        onClick={() => {
+            if (!enlarged)
+                setEnlarged(true)
+        }}
+        className={`enlarge-map-button ${
+            enlarged ? "dispatch-map-resize" : ""
+        }`}
+        >
             <Map
                 zoomControl={false}
                 center={center}
@@ -267,9 +321,12 @@ export default function GeoFilter({ id = "geo", options = {} }) {
                     border: "2px solid rgb(54, 48, 74)",
                     borderRadius: 4,
                     zIndex: 4,
+                    pointerEvents: !enlarged ? "none" : "auto"
                 }}
             >
-                <FeatureGroup>
+                <FeatureGroup
+                    ref={groupRef}
+                >
                     <EditControl
                         ref={editRef}
                         position="topright"
@@ -351,7 +408,7 @@ export default function GeoFilter({ id = "geo", options = {} }) {
                     position: "relative",
                 }}
             >
-                <Popup
+                {/* <Popup
                     trigger={
                         <div
                             className={`${
@@ -380,8 +437,8 @@ export default function GeoFilter({ id = "geo", options = {} }) {
                     content={"Clear previous selection"}
                     position="left center"
                     inverted
-                />
-                <Popup
+                /> */}
+                {/* <Popup
                     trigger={
                         <div
                             className={`enlarge-map-button ${
@@ -403,7 +460,7 @@ export default function GeoFilter({ id = "geo", options = {} }) {
                     content={"Expand Map"}
                     position="left center"
                     inverted
-                />
+                /> */}
             </div>
         </div>
     );

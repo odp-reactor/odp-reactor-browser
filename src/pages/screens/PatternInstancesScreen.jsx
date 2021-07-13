@@ -154,6 +154,7 @@ export default function PatternInstancesScreen({ filteredKnowledgeGraph }) {
                     >
                         {thereIsGeoLocationToFilter && (
                             <GeoFilter
+                                filteredKnowledgeGraph={filteredKnowledgeGraph}
                                 topBorder={true}
                                 title="On a map"
                                 id="geo"
