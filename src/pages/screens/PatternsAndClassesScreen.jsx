@@ -12,6 +12,7 @@ import { Navbar } from "../../layout/Navbar";
 import PatternFilter from "../../filters/filter-ui/PatternFilter";
 import LeftOccurencesSliderFilter from "../../filters/filter-ui/LeftOccurencesSliderFilter";
 import RightOccurencesSliderFilter from "../../filters/filter-ui/RightOccurencesSliderFilter";
+import OccurencesSliderFilter from "../../filters/filter-ui/OccurencesSliderFilter";
 import ClassCentralityMeasureFilter from "../../filters/filter-ui/ClassCentralityMeasureFilter";
 import { Grid } from "semantic-ui-react";
 
@@ -22,8 +23,6 @@ export default function PatternsAndClassesScreen({ filteredKnowledgeGraph }) {
     const { isTouch } = useTouch();
 
     const kg = filteredKnowledgeGraph !== null;
-
-    console.log("Istouch:", isTouch);
 
     return (
         <ODPReactorContainer>
@@ -58,17 +57,11 @@ export default function PatternsAndClassesScreen({ filteredKnowledgeGraph }) {
                             id="patternPie"
                             description="Check items to show views of the specified type. While a view is unchecked all related concepts are not shown. If no view is selected all the views are shown by default"
                         />
-                        <LeftOccurencesSliderFilter
+                        <OccurencesSliderFilter 
                             topBorder={true}
-                            title="Min occurences"
-                            id="leftOccurences"
-                            description="Tune this filter to show only views with the number of occurences greater than the selected value"
-                        />
-                        <RightOccurencesSliderFilter
-                            title="Max occurences"
-                            id="rightOccurences"
-                            description="Tune this filter to show only views with the number of occurences less than the selected value"
-                        />
+                            title="Occurences"
+                            id="occurences"
+                            description="Tune this filter to show only views with the number of occurences in the selected interval"/>
                         <ClassCentralityMeasureFilter
                             topBorder={true}
                             title="Concept relevance"

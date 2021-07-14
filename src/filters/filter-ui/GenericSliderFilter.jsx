@@ -18,15 +18,18 @@ export default function GenericSliderFilter({
         return `${decimals > 1 ? d.toPrecision(2) : d}`;
     },
     sliderStep = 0.1,
+    doubleHandle,
 }) {
     let filterAlgorithm
     const initialFilterOptions = {
         active: isActive,
         filterCallback: filterAlgorithm,
+        hasDefaultConfig: true
     };
-    const { filter, setFilterOptions } = useFilter(id, initialFilterOptions);
+    const { filter, setFilterOptions, useResetFilter } = useFilter(id, initialFilterOptions);
 
     const initialRange = findSliderDomain(resources, resourceProperty);
+    defaultRange = defaultRange ? defaultRange : initialRange;
     const [range, setRange] = useState(
         (filter && filter.getStrategyOption("range")) ||
             defaultRange ||
@@ -44,9 +47,15 @@ export default function GenericSliderFilter({
             setFilterOptions({
                 ...filter.options,
                 filterCallback: filterAlgorithm,
+                hasDefaultConfig: range[0] === defaultRange[0] && range[1] === defaultRange[1]
             });
         }
     }, [range]);
+
+    useResetFilter(() => {
+        setRange(initialRange);
+    });
+
 
     if (resources.length < 2) {
         return null;
@@ -59,6 +68,7 @@ export default function GenericSliderFilter({
             domain={initialRange}
             formatTicks={formatTicks}
             sliderStep={sliderStep}
+            doubleHandle={doubleHandle}
         />
     );
 }

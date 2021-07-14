@@ -27,6 +27,7 @@ export default function SliderFilter({
         return `${decimals > 1 ? d.toPrecision(2) : d}`;
     },
     reversed = false,
+    doubleHandle = false,
     sliderStep = 0.1,
 }) {
     // filter cannot work with one node
@@ -78,8 +79,9 @@ export default function SliderFilter({
                         )}
                     </Handles>
                     <Tracks
-                        left={reversed ? true : false}
-                        right={reversed ? false : true}
+                        // if two handles then track only inside interval else on the right or on the left
+                        left={doubleHandle ? false : reversed ? true : false}
+                        right={doubleHandle ? false : reversed ? false : true}
                     >
                         {({ tracks, getTrackProps }) => (
                             <div className="slider-tracks">
