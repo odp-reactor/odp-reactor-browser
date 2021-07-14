@@ -57,7 +57,7 @@ export default function PatternsAndClassesScreen({ filteredKnowledgeGraph }) {
                             id="patternPie"
                             description="Check items to show views of the specified type. While a view is unchecked all related concepts are not shown. If no view is selected all the views are shown by default"
                         />
-                        <OccurencesSliderFilter 
+                        <OccurencesSliderFilter
                             topBorder={true}
                             title="Occurences"
                             id="occurences"

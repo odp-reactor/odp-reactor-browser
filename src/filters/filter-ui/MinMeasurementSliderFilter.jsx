@@ -79,6 +79,8 @@ export default function MinMeasurementSliderFilter({
         }
     }, [range, showElementsWithMissingProperty]);
 
+    
+
     useResetFilter(() => {
         if (filter) {
             setRange([initialRange[0]]);
