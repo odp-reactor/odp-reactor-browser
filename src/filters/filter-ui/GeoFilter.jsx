@@ -22,6 +22,7 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import { blueMarkerIcon } from "../../base/icon/ld-ui-icon";
 
 import { FilterOnMapStrategy } from "../../filters/filter-algorithms/FilterOnMapStrategy";
+import { useAlertCtx } from "../../base/alert/ctx/useAlertCtx";
 
 const circleToPolygon = require("circle-to-polygon");
 const numberOfEdges = 64;
@@ -49,6 +50,8 @@ export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeG
     const mapRef = useRef();
     const groupRef = useRef()
     const editRef = useRef();
+
+    const {showAlert} = useAlertCtx()
 
     const ZOOM_LEVEL = 12;
     const MAX_ZOOM = 9;
@@ -124,15 +127,28 @@ export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeG
         }
     }, [featureGroup]);
 
+    const isSearchBarLayer = (layer) => {
+        // bbox is a prop returned from nominatim.openstreetmap API
+        // this is a shit approach to detect the address layer
+        return layer.feature && layer.feature.bbox
+    }
+
     // prepare map
     useEffect(() => {
         if (mapRef.current) {
             const map = mapRef.current.leafletElement;
             const mcg = L.markerClusterGroup();
 
+            let searchBarLayer;
+
             // we use this id to remove previous layer and add new one
             mcg.deleteId = "marker-data-layer-to-replace"
             map.eachLayer((layer) => {
+
+                if (isSearchBarLayer(layer)) {
+                    searchBarLayer = layer
+                }
+
                 if (layer.deleteId === "marker-data-layer-to-replace") {
                     map.removeLayer(layer)
                 }
@@ -150,10 +166,16 @@ export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeG
             });
             map.addLayer(mcg);
             try {
-                map.fitBounds(mcg.getBounds(), {
+                // if there are nodes fit to them
+                if (resources.length > 0) {
+                    map.fitBounds(mcg.getBounds(), {
                     padding: [20, 20],
                     maxZoom: 8,
-                });
+                    });
+                } else {
+                    // if there are no nodes try to fit to searched area to show user the area
+                    map.fitBounds(searchBarLayer.getBounds())
+                }
             } catch(e) {
                 console.log(e)
             }
@@ -422,6 +444,9 @@ export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeG
                         const freshNewFeatureGroup = { type: "FeatureCollection", features: [] };
                         freshNewFeatureGroup.features.push(feature);
                         setFeatureGroup(freshNewFeatureGroup);
+                    }}
+                    onResultNotFound={(address)=>{
+                        showAlert(`Address ${address} is not valid`, true)
                     }}/>
                 </div>
 
@@ -440,7 +465,11 @@ export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeG
                     const freshNewFeatureGroup = { type: "FeatureCollection", features: [] };
                     freshNewFeatureGroup.features.push(feature);
                     setFeatureGroup(freshNewFeatureGroup);
-                }}/>
+                }}
+                onResultNotFound={(address)=>{
+                    showAlert(`Address ${address} is not valid`, true)
+                }}
+                />
                 {thereIsActiveSelection && <div style={{marginLeft: 20}}><Button onClick={clearNotWithLibraryButton} color="red">Clear</Button></div>}
             </div>
         </div>

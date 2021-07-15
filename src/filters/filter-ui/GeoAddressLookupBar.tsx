@@ -8,9 +8,14 @@ interface OnReceivedPolygonResultCallback {
     (result: GeoJSONFeature): void;
 }
 
+interface OnResulNotFoundCallback {
+    (searchAddress : string) : void;
+}
+
 type SearchBarPlaceholderProps = {
     searchBarPlaceholder : string,
     onResult : OnReceivedPolygonResultCallback;
+    onResultNotFound: OnResulNotFoundCallback
 }
 
 const geocoder = new Geocoder()
@@ -26,7 +31,8 @@ function isValidPolygon(featureCollection: GeoJSONFeatureCollection) {
 
 export function GeoAddressLookupBar({
     searchBarPlaceholder,
-    onResult = ()=>{}
+    onResult = ()=>{},
+    onResultNotFound = ()=>{}
 } : SearchBarPlaceholderProps) {
 
     const [searchAddress, setSearchAddress] = useState("")
@@ -35,17 +41,22 @@ export function GeoAddressLookupBar({
         setSearchAddress(e.target.value)
     }
 
-    const onSearchButtonClick = () => {
+    const onSearchButtonClick = () : void => {
         if (isAtLeastThreeChar(searchAddress)) {
             geocoder.geocode(searchAddress, true).then((featureCollection)=>{
                 if (isValidPolygon(featureCollection)) {
                     onResult(featureCollection.features[0])
                 } else {
-                    console.log("useErrorAlert here")
+                    onResultNotFound(searchAddress)
                 }
             })
         }
-    } 
+    }
+
+    const onEnterKeyboardButtonSearchClick = (e : any) : void => {
+        if(e.key === 'Enter')
+            onSearchButtonClick()
+    }
 
     return (
         <div className="" style={{ marginLeft: 20, marginBottom: 10, display: "flex" }}>
@@ -54,6 +65,7 @@ export function GeoAddressLookupBar({
                 className="geo-search-item"
                 placeholder={searchBarPlaceholder}
                 onChange={handleInput}
+                onKeyPress={onEnterKeyboardButtonSearchClick}
             ></Input>
             <Button onClick={onSearchButtonClick}>Search</Button>
         </div>
