@@ -1,31 +1,32 @@
 import React, {useState, useEffect} from "react"
 
-import {Input} from "semantic-ui-react"
+import {Input, Button} from "semantic-ui-react"
 
 import {Geocoder} from "../../locations/Geocoder"
 
 interface OnReceivedPolygonResultCallback {
-    (result: GeoJSON): void;
+    (result: GeoJSONFeature): void;
 }
 
 type SearchBarPlaceholderProps = {
     searchBarPlaceholder : string,
     onResult : OnReceivedPolygonResultCallback;
-    geocodingReqeustDelay: number
 }
 
-const DEFAULT_GEOCODING_DELAY = 1000
 const geocoder = new Geocoder()
 
 function isAtLeastThreeChar(address: string) {
     return address.length > 2
 }
 
+function isValidPolygon(featureCollection: GeoJSONFeatureCollection) {
+    const validGeometryType = ["Polygon", "MultiPolygon"]
+    return featureCollection && featureCollection.features[0] && featureCollection.features[0].geometry && validGeometryType.includes(featureCollection.features[0].geometry.type) ? true : false
+}
+
 export function GeoAddressLookupBar({
     searchBarPlaceholder,
-    onResult = ()=>{},
-    geocodingReqeustDelay=DEFAULT_GEOCODING_DELAY
-
+    onResult = ()=>{}
 } : SearchBarPlaceholderProps) {
 
     const [searchAddress, setSearchAddress] = useState("")
@@ -34,31 +35,27 @@ export function GeoAddressLookupBar({
         setSearchAddress(e.target.value)
     }
 
-    // refactor this interaction with user click on a search button
-    // to be open for autocompletion enahancement
-
-    useEffect(() => {
-        // set a delay after a user modify input before updating filtering
-        const delayDebounceFn = setTimeout(() => {
-            if (isAtLeastThreeChar(searchAddress)) {
-                geocoder.geocode(searchAddress, true).then((geoJSON)=>{
-                    console.log("GeocodedPolygon:", geoJSON)
-                    // if isValidPolygon() {onResult(geoJSON)}
-                    // else useError, setErrorAlert ...
-                })
-            }
-        }, geocodingReqeustDelay);
-        return () => clearTimeout(delayDebounceFn);
-    }, [searchAddress]);
+    const onSearchButtonClick = () => {
+        if (isAtLeastThreeChar(searchAddress)) {
+            geocoder.geocode(searchAddress, true).then((featureCollection)=>{
+                if (isValidPolygon(featureCollection)) {
+                    onResult(featureCollection.features[0])
+                } else {
+                    console.log("useErrorAlert here")
+                }
+            })
+        }
+    } 
 
     return (
-        <div className="search-component" style={{ marginLeft: 20 }}>
+        <div className="" style={{ marginLeft: 20, marginBottom: 10, display: "flex" }}>
             <Input
                 icon="search"
-                className="search-item"
+                className="geo-search-item"
                 placeholder={searchBarPlaceholder}
                 onChange={handleInput}
             ></Input>
+            <Button onClick={onSearchButtonClick}>Search</Button>
         </div>
     );
 }

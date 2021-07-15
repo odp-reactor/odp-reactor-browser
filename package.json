@@ -28,6 +28,7 @@
     "lodash": "^4.17.20",
     "ngraph.forcelayout": "^3.0.1",
     "ngraph.graph": "^19.1.0",
+    "object-hash": "^2.2.0",
     "react": "^16.13.1",
     "react-compound-slider": "^3.3.1",
     "react-d3-graph": "^2.6.0",
