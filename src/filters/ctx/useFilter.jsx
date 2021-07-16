@@ -17,7 +17,7 @@ export default function useFilter(id, options) {
     const { showAlert } = useAlertCtx();
     useEffect(() => {
         if (filter && filter.isActive()) {
-            showAlert();
+            showAlert("Filter Updated", false);
         }
     }, [filter]);
 

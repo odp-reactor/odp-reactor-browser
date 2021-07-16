@@ -15,6 +15,8 @@ export class FilterOnMapStrategy {
             return true;
         }
         if (resource.lat && resource.long) {
+            console.time("geolookup")
+
             let geolookup = new GeoJsonGeometriesLookup(this.featureGroup);
             let point = {
                 type: "Point",
@@ -22,8 +24,10 @@ export class FilterOnMapStrategy {
             };
             if (geolookup.hasContainers(point)) {
                 // node resource geoJSON keep it
+                console.timeEnd("geolookup")
                 return true;
             } else {
+                console.timeEnd("geolookup")
                 return false;
             }
         } else {

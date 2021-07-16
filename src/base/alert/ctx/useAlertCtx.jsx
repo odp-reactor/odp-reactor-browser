@@ -3,8 +3,8 @@ import { AlertCtx } from "./AlertCtx";
 
 export function useAlertCtx() {
     const { useAlert } = useContext(AlertCtx);
-    const showAlert = useAlert();
+    const {showAlert, alert} = useAlert();
     return {
-        showAlert,
+        showAlert, alert
     };
 }

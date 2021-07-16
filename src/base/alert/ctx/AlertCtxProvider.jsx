@@ -6,6 +6,7 @@ export default function AlertCtxProvider({ children }) {
         switch: true,
         message: "",
         active: false,
+        warning: false
     });
 
     function useAlert() {
@@ -18,15 +19,16 @@ export default function AlertCtxProvider({ children }) {
             }
         }, [alert]);
 
-        const showAlert = (/*message*/) => {
+        const showAlert = (message, warning=false) => {
             setAlert({
                 switch: true,
                 // switch: context.alert ? !context.alert.switch : true,
                 active: true,
-                // message: message,
+                message: message,
+                warning: warning
             });
         };
-        return showAlert;
+        return {showAlert, alert};
     }
 
     function showAlertBox(hideTime = 1500) {
@@ -47,7 +49,7 @@ export default function AlertCtxProvider({ children }) {
     return (
         <AlertCtx.Provider
             value={{
-                useAlert,
+                useAlert
             }}
         >
             {children || null}

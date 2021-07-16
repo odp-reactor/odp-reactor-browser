@@ -184,6 +184,19 @@ i.show-help {
     padding: 15px;
 }
 
+.search-map-button {
+    position:  fixed;
+    opacity: 1;
+    top: 30px;
+    left: 35vw;
+    padding: 0;
+    background-color: "none";
+    border-radius: 0;
+    width: 0;
+    margin: 0;
+    height: 0;
+}
+
 .enlarged-map-button-hidden {
     visibility: hidden;
 }
