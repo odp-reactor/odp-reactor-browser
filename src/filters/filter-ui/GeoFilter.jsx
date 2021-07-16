@@ -398,12 +398,13 @@ export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeG
                         className="map-button edit-button"
                         onClick={() => {
                             if (mapUIState === startDrawFlag) {
-                                editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.enable();
+                                // change circle to polygon to change editing style
+                                editRef.current.leafletElement._toolbars.draw._modes.circle.handler.enable();
                                 setMapUI(stopDrawFlag);
                             }
                             if (mapUIState === stopDrawFlag) {
-                                editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.completeShape();
-                                editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.disable();
+                                editRef.current.leafletElement._toolbars.draw._modes.circle.handler.completeShape();
+                                editRef.current.leafletElement._toolbars.draw._modes.circle.handler.disable();
                                 setMapUI(startDrawFlag);
                             }
                         }}
