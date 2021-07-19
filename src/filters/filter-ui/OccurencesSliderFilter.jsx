@@ -13,6 +13,8 @@ export default function OccurencesSliderFilter({}) {
             id="occurences"
             resourceProperty="occurences"
             sliderStep={1}
+            doubleHandle={true}
+            withInputBox={true}
         />
     );
 }

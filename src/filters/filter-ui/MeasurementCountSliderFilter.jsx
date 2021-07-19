@@ -1,5 +1,5 @@
 import React from "react";
-import { useKGCtx } from "../../../knowledgegraph/KGCtx/useKGCtx";
+import { useKGCtx } from "../../knowledgegraph/ctx/useKGCtx";
 
 import GenericSliderFilter from "./GenericSliderFilter";
 
@@ -11,6 +11,8 @@ export default function MeasurementCountSliderFilter({}) {
             resources={knowledgeGraph.getResources()}
             id="measurements"
             resourceProperty="measures"
+            doubleHandle={true}
+            sliderStep={1}
         />
     );
 }

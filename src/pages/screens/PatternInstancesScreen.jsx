@@ -5,10 +5,13 @@ import ODPReactorContainer from "../../layout/ODPReactorContainer";
 import GeoFilter from "../../filters/filter-ui/GeoFilter";
 import MinMeasurementSliderFilter from "../../filters/filter-ui/MinMeasurementSliderFilter";
 import MaxMeasurementSliderFilter from "../../filters/filter-ui/MaxMeasurementSliderFilter";
+import MeasurementSliderFilter from "../../filters/filter-ui/MeasurementSliderFilter";
 import MaxMeasurementCountSliderFilter from "../../filters/filter-ui/MaxMeasurementCountSliderFilter";
 import MinMeasurementCountSliderFilter from "../../filters/filter-ui/MinMeasurementCountSliderFilter";
 import MinPartCountSliderFilter from "../../filters/filter-ui/MinPartCountSliderFilter";
 import MaxPartCountSliderFilter from "../../filters/filter-ui/MaxPartCountSliderFilter";
+import MeasurementCountSliderFilter from "../../filters/filter-ui/MeasurementCountSliderFilter"
+import PartCountSliderFilter from "../../filters/filter-ui/PartCountSliderFilter";
 import hasResourceToFilter from "../../filters/filter-ui/hasResourceToFilter";
 import { useKGCtx } from "../../knowledgegraph/ctx/useKGCtx";
 import { forEach, map } from "lodash";
@@ -89,7 +92,6 @@ export default function PatternInstancesScreen({ filteredKnowledgeGraph }) {
 
     const measurementFilters = [];
     forEach(measurementSet, (m) => {
-        const iterator = ["minValue", "maxValue"];
         const thereIsMeasureToFilter = hasResourceToFilter(
             resources,
             (resource) => {
@@ -101,31 +103,15 @@ export default function PatternInstancesScreen({ filteredKnowledgeGraph }) {
             }
         );
         if (thereIsMeasureToFilter) {
-            forEach(iterator, (i) => {
-                switch (i) {
-                    case "minValue":
-                        measurementFilters.push(
-                            <MinMeasurementSliderFilter
-                                topBorder={true}
-                                id={`min-${m}`}
-                                title={`Min ${m}`}
-                                measurementType={m}
-                                description={`Tune this filter to show only cultural properties with a value for ${m} greater than the selected value.`}
-                            />
-                        );
-                        break;
-                    case "maxValue":
-                        measurementFilters.push(
-                            <MaxMeasurementSliderFilter
-                                id={`max-${m}`}
-                                title={`Max ${m}`}
-                                measurementType={m}
-                                description={`Tune this filter to show only cultural properties with a value for ${m} less than the selected value.`}
-                            />
-                        );
-                        break;
-                }
-            });
+            measurementFilters.push(
+                <MeasurementSliderFilter 
+                    topBorder={true}
+                    id={`measurement-${m}`}
+                    title={`${m}`}
+                    measurementType={m}
+                    description={`Tune this filter to show only cultural properties with a value for ${m} in the selected interval.`}
+                />
+            )
         }
     });
 
@@ -193,39 +179,24 @@ export default function PatternInstancesScreen({ filteredKnowledgeGraph }) {
                                 description="Select the maximum start time of the time interval of a location. You will see all the views with the ending year of location in a place less than the selected value. You can choose to include or exclude values with no specified end time value. There may be two cases: (A) the object is currently been located in the place; (B) data is missing"
                             />
                         )}
-                        {thereArePartsToFilter && (
-                            <MinPartCountSliderFilter
-                                id="minParts"
-                                title="Min Parts"
+                        {thereArePartsToFilter &&
+                            <PartCountSliderFilter 
+                                id="parts"
+                                title="Number of Parts"
                                 resourceProperty="parts"
-                                description="Tune this filter to show only cultural properties with a number of components less than the selected value."
+                                description="Tune this filter to show only cultural properties with a number of components in the selected interval."
                             />
-                        )}
-                        {thereArePartsToFilter && (
-                            <MaxPartCountSliderFilter
-                                id="maxParts"
-                                title="Max Parts"
-                                resourceProperty="parts"
-                                description="Tune this filter to show only cultural properties with a number of components less greater the selected value."
-                            />
-                        )}
+                        }
                         {measurementFilters.length !== 0 &&
                             map(measurementFilters, (m) => {
                                 return m;
                             })}
                         {measurementFilters.length !== 0 && (
-                            <MinMeasurementCountSliderFilter
+                            <MeasurementCountSliderFilter
                                 topBorder={true}
-                                id="minMeasurements"
-                                title="Min measurements"
-                                description="Tune this filter to show only cultural properties with their number of collected measurements greater than the selected value."
-                            />
-                        )}
-                        {measurementFilters.length !== 0 && (
-                            <MaxMeasurementCountSliderFilter
-                                id="maxMeasurements"
-                                title="Max measurements"
-                                description="Tune this filter to show only cultural properties with their number of collected measurements less than the selected value."
+                                id="measurementCount"
+                                title="Number of measurements"
+                                description="Tune this filter to show only cultural properties with their number of collected measurements in the selected interval."
                             />
                         )}
                     </PatternMenu>
