@@ -14,6 +14,7 @@ export default function OccurencesSliderFilter({}) {
             resourceProperty="occurences"
             sliderStep={1}
             doubleHandle={true}
+            withInputBox={true}
         />
     );
 }

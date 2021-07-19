@@ -109,6 +109,8 @@ export default function MeasurementSliderFilter({
             domain={initialRange}
             formatTicks={formatTicks}
             doubleHandle={true}
+            withInputBox={true}
+            sliderInputStep={0.1}
         />
             <IncludeElementsWithMissingPropertyCheckbox
                 propertyName={measurementType}

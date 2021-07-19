@@ -4,6 +4,8 @@ import { Slider, Rail, Handles, Tracks, Ticks } from "react-compound-slider";
 import { Tick, Track, Handle, TooltipRail } from "./SliderComponents";
 import { decimalPlaces } from "../../base/math";
 
+import {SliderInput} from "./SliderInput"
+
 const sliderStyle = {
     margin: "5%",
     position: "relative",
@@ -29,19 +31,31 @@ export default function SliderFilter({
     reversed = false,
     doubleHandle = false,
     sliderStep = 0.1,
+    withInputBox = false,
+    sliderInputStep=1
 }) {
+
     // filter cannot work with one node
     const onChange = (newRange) => {
-        if (!Number.isNaN(newRange[0]) && !Number.isNaN(newRange[1])) {
-            setRange(newRange);
-        } else {
-            setRange([domain[reversed ? 1 : 0]]);
-        }
+        setTimeout(()=>{
+            if (!Number.isNaN(newRange[0]) && !Number.isNaN(newRange[1])) {
+                setRange(newRange);
+            } else {
+                setRange([domain[reversed ? 1 : 0]]);
+            }
+        }, 300)
     };
 
     if (domain[MIN] < domain[MAX]) {
         return (
-            <div style={{ height: 40, width: "100%", marginTop: 20 }}>
+            <div className="slider-container" style={{ height: withInputBox ? 80 : 40, width: "100%", marginTop: 20 }}>
+                {withInputBox && <div style={{
+                    display : "flow-root",
+                    marginBottom: 20
+                }}>
+                    <SliderInput range={range} onChange={setRange} left={true} domain={domain} step={sliderInputStep}/>
+                    <SliderInput range={range} onChange={setRange} left={false} domain={domain} step={sliderInputStep}/>
+                </div>}
                 <Slider
                     mode={1}
                     step={sliderStep}

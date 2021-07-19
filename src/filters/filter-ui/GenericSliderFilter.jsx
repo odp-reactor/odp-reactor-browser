@@ -19,6 +19,7 @@ export default function GenericSliderFilter({
     },
     sliderStep = 0.1,
     doubleHandle,
+    withInputBox=false
 }) {
     let filterAlgorithm
     const initialFilterOptions = {
@@ -69,6 +70,7 @@ export default function GenericSliderFilter({
             formatTicks={formatTicks}
             sliderStep={sliderStep}
             doubleHandle={doubleHandle}
+            withInputBox={withInputBox}
         />
     );
 }

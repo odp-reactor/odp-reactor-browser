@@ -12,6 +12,7 @@ export default function PartCountSliderFilter({}) {
             resourceProperty="parts"
             doubleHandle={true}
             sliderStep={1}
+            withInputBox={true}
         />
     );
 }
