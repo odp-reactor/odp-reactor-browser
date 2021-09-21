@@ -89,7 +89,9 @@ export default function VisualGraph({ visualGraph = [] }) {
             {/* {showTooltip && ( */}
                 <Tooltip
                     style={{
-                        width: 300,
+                        width: 600,
+                        left: "20px !important",
+                        top: "20px !important"
                     }}
                     bindType="node" placement={"bottom"} hasArrow={true}
                 >

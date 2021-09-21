@@ -4,8 +4,8 @@
   "private": true,
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
-    "@antv/graphin": "^2.0.6",
-    "@antv/graphin-components": "^2.0.5",
+    "@antv/graphin": "^2.3.8",
+    "@antv/graphin-components": "^2.3.0",
     "@antv/graphin-icons": "^1.0.0",
     "@craco/craco": "^6.1.1",
     "@ldflex/comunica": "^3.4.2",
