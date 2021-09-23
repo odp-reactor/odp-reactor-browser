@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
 
 import SliderFilter from "./SliderFilter";
-import { useKGCtx } from "../../../knowledgegraph/KGCtx/useKGCtx";
-import useFilter from "../../../filters/FilterCtx/useFilter";
-
-import { FilterTimeIntervalStrategy } from "../../../filters/filter-algorithms/FilterTimeIntervalStrategy";
+import { useKGCtx } from "../../knowledgegraph/ctx/useKGCtx";
+import useFilter from "../../filters/ctx/useFilter";
+import { FilterTimeIntervalStrategy } from "../../filters/filter-algorithms/FilterTimeIntervalStrategy";
+import { IncludeElementsWithMissingPropertyCheckbox } from "./IncludeElementsWithMissingPropertyCheckbox";
 
 /**
  * node {
@@ -25,32 +25,96 @@ export default function TimeIntervalFilter({ id = "time", options = {} }) {
     // read nodes from global context
     const resources = knowledgeGraph.getResources();
 
+    let filterAlgorithm,
+        showElementsWithMissingProperty,
+        setShowElementsWithMissingProperty;
     const initialFilterOptions = {
-        active: false,
+        active: true,
         filterCallback: filterAlgorithm,
+        hasDefaultConfig: true,
+        showElementsWithMissingProperty: showElementsWithMissingProperty,
     };
-    const { filter, setFilterOptions } = useFilter(id, initialFilterOptions);
+    const { filter, setFilterOptions, useResetFilter } = useFilter(
+        id,
+        initialFilterOptions
+    );
+
+    const defaultShowElementsWithMissingProperty =
+        filter &&
+        typeof filter.getStrategyOption("showElementsWithMissingProperty") !==
+            "undefined"
+            ? filter.getStrategyOption("showElementsWithMissingProperty")
+            : true;
+
+    [
+        showElementsWithMissingProperty,
+        setShowElementsWithMissingProperty,
+    ] = useState(defaultShowElementsWithMissingProperty);
 
     // if domain not in options compute it
     const initialRange = useMemo(() => findTimeDomain(resources), [resources]);
 
     const [range, setRange] = useState(
-        (filter && filter.getStrategyOption("range")) || initialRange
+        (filter && filter.getStrategyOption("startTime")) || initialRange
     );
 
-    const filterAlgorithm = FilterTimeIntervalStrategy.create({ range });
+    filterAlgorithm = FilterTimeIntervalStrategy.create({
+        range: range,
+        showElementsWithMissingProperty: showElementsWithMissingProperty,
+    });
 
     useEffect(() => {
         if (filter) {
             setFilterOptions({
                 ...filter.options,
+                hasDefaultConfig:
+                    range[0] === initialRange[0] &&
+                    showElementsWithMissingProperty,
                 filterCallback: filterAlgorithm,
             });
         }
-    }, [range]);
+    }, [range, showElementsWithMissingProperty]);
+
+    const onChangeElementsWithMissingPropertyFlag = (checked) => {
+        setShowElementsWithMissingProperty(checked);
+    };
+
+    useResetFilter(() => {
+        setRange(initialRange);
+        setShowElementsWithMissingProperty(true);
+    });
+
 
     return (
-        <SliderFilter range={range} setRange={setRange} domain={initialRange} />
+        <div>
+            <SliderFilter
+                range={range}
+                setRange={setRange}
+                domain={initialRange}
+                sliderStep={1}
+                doubleHandle={true}
+                withInputBox={true}
+            />
+            <IncludeElementsWithMissingPropertyCheckbox
+                styles={{
+                    checkbox: {
+                        marginTop: 20,
+                    },
+                    checkboxLabel: {
+                        fontSize: 16,
+                        cursor: "pointer",
+                    },
+                    checkboxButton: {
+                        width: 20,
+                        height: 20,
+                        marginRight: 5,
+                        cursor: "pointer",
+                    },
+                }}
+                checked={showElementsWithMissingProperty}
+                onChange={onChangeElementsWithMissingPropertyFlag}
+            />
+        </div>
     );
 }
 
