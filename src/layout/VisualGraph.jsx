@@ -8,6 +8,8 @@ import "@antv/graphin-icons/dist/index.css";
 import { useGraphinDoubleClick } from "./ld-ui-hooks";
 import { useLayoutCtx } from "./ctx/useLayoutCtx";
 import { Tooltip } from "@antv/graphin-components";
+import { ContextMenu } from '@antv/graphin-components';
+
 import { Checkbox } from "semantic-ui-react";
 import {
     safelyLoadShowTooltipFromSessionStorage,
@@ -17,6 +19,9 @@ import {
 import { useRouteCommandFactory } from "../base/route/useRouteCommandFactory";
 import { useSparqlClient } from "../sparql/useSparqlClient";
 import { RouteFactory, RouteEnum } from "../base/route/RouteFactory" 
+
+
+const { Menu } = ContextMenu;
 
 export default function VisualGraph({ visualGraph = [] }) {
     // graphRef for mix React virtual DOM and graphin imperative operation on DOM
@@ -86,14 +91,18 @@ export default function VisualGraph({ visualGraph = [] }) {
             }}
             nodeStateStyles={nodeStateStyles}
         >
-            {/* {showTooltip && ( */}
+
+            {/* <ContextMenu>
+                <Menu bindType="node">
+                    <Menu.Item>{(model) => {
+                        return model.data.type
+                    }}</Menu.Item>
+                </Menu>
+            </ContextMenu> */}
+
+            {showTooltip && (
                 <Tooltip
-                    style={{
-                        width: 600,
-                        left: "20px !important",
-                        top: "20px !important"
-                    }}
-                    bindType="node" placement={"bottom"} hasArrow={true}
+                    bindType="node" placement={"bottom"}
                 >
                     <Tooltip.Node>
                         {(model) => {
@@ -160,7 +169,7 @@ export default function VisualGraph({ visualGraph = [] }) {
                         }}
                     </Tooltip.Node>
                 </Tooltip>
-            {/* )} */}
+            )}
             <ActivateRelations trigger="click" />
             <div
                 style={{

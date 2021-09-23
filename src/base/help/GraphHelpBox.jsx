@@ -196,7 +196,7 @@ const msgStyle = {
 };
 const boxStyle = {
     position: "fixed",
-    top: 650,
+    top: "100vh",
     left: 0,
     zIndex: 10,
     cursor: "pointer",
