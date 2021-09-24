@@ -9,55 +9,30 @@ const now = new Date();
 const currentTime = now.getFullYear();
 
 export class FilterTimeIntervalStrategy {
-    constructor(range) {
+    constructor(range,showElementsWithMissingProperty) {
         this.range = range;
+        this.showElementsWithMissingProperty = showElementsWithMissingProperty;
         this.class = this.constructor.name;
     }
-    static create({ range }) {
+    static create({ range, showElementsWithMissingProperty }) {
         if (!range) return undefined;
-        return new FilterTimeIntervalStrategy(range);
+        if (typeof showElementsWithMissingProperty === "undefined") {
+            showElementsWithMissingProperty = true;
+        }
+        return new FilterTimeIntervalStrategy(range, showElementsWithMissingProperty);
     }
     filter(resource) {
-        if (!resource.startTime && !resource.endTime) {
-            return true;
-        } else if (!resource.startTime) {
-            if (
-                this.range[rangeEnum.MIN] >= initialTime &&
-                this.range[rangeEnum.MAX] <= resource.endTime
-            ) {
-                // node inside time interval set true
+        if (!resource.startTime || !resource.endTime) {
+            if (this.showElementsWithMissingProperty) {
                 return true;
             } else {
-                // node not in range set false
                 return false;
             }
-        } else if (!resource.endTime) {
-            // Handle nodes with missing endTime
-            // we consider as if it is today
-            //
-            // get node in map
-            if (
-                this.range[rangeEnum.MIN] >= resource.startTime &&
-                this.range[rangeEnum.MAX] <= currentTime
-            ) {
-                // node inside time interval set true
-                return true;
-            } else {
-                // node not in range set false
-                return false;
-            }
+        } else if (resource.startTime <= this.range[rangeEnum.MAX] && this.range[rangeEnum.MIN] <= resource.endTime) {
+            // range overlaps then true
+            return true
         } else {
-            // Handle nodes with startTime and endTime defined
-            if (
-                this.range[rangeEnum.MIN] >= resource.startTime &&
-                this.range[rangeEnum.MAX] <= resource.endTime
-            ) {
-                // node inside time interval set true
-                return true;
-            } else {
-                // node not in range set false
-                return false;
-            }
-        }
+            return false
+        }        
     }
 }

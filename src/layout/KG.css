@@ -270,3 +270,10 @@ i.show-help {
 .item.menu-item.filter-item.filter-filter-flag {
     display: none;
 }
+
+
+.graphin-components-tooltip {
+    position: absolute !important;
+    top: 5vh !important;
+    left: 7vw !important;
+}

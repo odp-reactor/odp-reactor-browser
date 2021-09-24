@@ -21,14 +21,12 @@ import { Navbar } from "../../layout/Navbar";
 import GoToButton from "../../layout/GoToButton";
 import PatternInstancesHelpBox from "../../base/help/PatternInstancesHelpBox";
 import LocationTypeFilter from "../../filters/filter-ui/LocationTypeFilter";
-import StartTimeIntervalFilter from "../../filters/filter-ui/StartTimeIntervalFilter";
-import EndTimeIntervalFilter from "../../filters/filter-ui/EndTimeIntervalFilter";
+import TimeIntervalFilter from "../../filters/filter-ui/TimeIntervalFilter";
 import SinglePropertySearchBarFilter from "../../filters/filter-ui/SinglePropertySearchBarFilter";
 
 export default function PatternInstancesScreen({ filteredKnowledgeGraph }) {
     const { knowledgeGraph } = useKGCtx();
 
-    console.log("RESOURCES KG", knowledgeGraph.getResources().length);
 
     // determine dynamically measurement filters
     const resources = knowledgeGraph.getResources();
@@ -165,18 +163,11 @@ export default function PatternInstancesScreen({ filteredKnowledgeGraph }) {
                             />
                         )} */}
                         {thereIsTimeToFilter && (
-                            <StartTimeIntervalFilter
+                            <TimeIntervalFilter
                                 topBorder={true}
-                                title="Start Time"
-                                id="startTime"
+                                title="Time Interval"
+                                id="time"
                                 description="Select the minimum start time of the time interval of a location. You will see all the views with the beginning year of location in a place greater than the selected value. You can choose to include or exclude values with no specified start time value. There may be two cases: (A) the object has always been located in a place; (B) data is missing"
-                            />
-                        )}
-                        {thereIsTimeToFilter && (
-                            <EndTimeIntervalFilter
-                                title="End Time"
-                                id="endTime"
-                                description="Select the maximum start time of the time interval of a location. You will see all the views with the ending year of location in a place less than the selected value. You can choose to include or exclude values with no specified end time value. There may be two cases: (A) the object is currently been located in the place; (B) data is missing"
                             />
                         )}
                         {thereArePartsToFilter &&
