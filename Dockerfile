@@ -2,10 +2,12 @@
 FROM node:14 as build
 
 # clone codebase
-RUN git clone https://github.com/ODPReactor/odp-reactor-server.git /app
+RUN git clone https://github.com/ODPReactor/odp-reactor-browser.git /app
 WORKDIR /app
+# install dep
+RUN yarn install
 #build
-RUN npm run build
+RUN yarn build
 
 
 
