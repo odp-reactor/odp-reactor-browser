@@ -1,13 +1,12 @@
 import React from "react";
 import { usePatternUri } from "../../base/route/usePatternUri";
 import { usePatternInstances } from "../usePatternInstances";
+import {CustomLoader} from "../../base/loader/CustomLoader"
 
 export function PatternInstancesFetching({ children }) {
     const patternUri = usePatternUri();
-    console.log("[*] Pattern: ", patternUri);
 
     const patternInstances = usePatternInstances(patternUri);
-    console.log("[*] Pattern Instances:", patternInstances);
     // if found patterns return it
     const data = patternInstances
         ? {
@@ -22,7 +21,7 @@ export function PatternInstancesFetching({ children }) {
                           data: data,
                       });
                   })
-                : null}
+                : <CustomLoader/>}
         </div>
     );
 }

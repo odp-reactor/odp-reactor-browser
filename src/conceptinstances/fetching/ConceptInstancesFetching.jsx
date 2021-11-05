@@ -1,13 +1,12 @@
 import React from "react";
 import { useConceptUri } from "../../base/route/useConceptUri";
 import { useConceptInstances } from "../useConceptInstances";
+import {CustomLoader} from "../../base/loader/CustomLoader"
 
 export function ConceptInstancesFetching({ children }) {
     const conceptUri = useConceptUri();
-    console.log("[*] Concept: ", conceptUri);
 
     const conceptInstances = useConceptInstances(conceptUri);
-    console.log("[*] Concept Instances:", conceptInstances);
     // if found patterns return it
     const data = conceptInstances
         ? {
@@ -22,7 +21,7 @@ export function ConceptInstancesFetching({ children }) {
                           data: data,
                       });
                   })
-                : null}
+                : <CustomLoader/>}
         </div>
     );
 }
