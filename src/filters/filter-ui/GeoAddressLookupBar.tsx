@@ -29,6 +29,16 @@ function isValidPolygon(featureCollection: GeoJSONFeatureCollection) {
     return featureCollection && featureCollection.features[0] && featureCollection.features[0].geometry && validGeometryType.includes(featureCollection.features[0].geometry.type) ? true : false
 }
 
+// async function raiseOnTimeout(operation : ()=> Promise<any> , milliseconds:number) {
+//     return new Promise(function(resolve,reject) {
+//         setTimeout(function() {
+//             reject(new Error("Operation didn't complete in " + milliseconds + " ms"))
+//         }, milliseconds)
+
+//         operation().then(res=>{resolve(res)}, err=> {reject(err)})
+//     })
+// }
+
 export function GeoAddressLookupBar({
     searchBarPlaceholder,
     onResult = ()=>{},
@@ -43,7 +53,7 @@ export function GeoAddressLookupBar({
 
     const onSearchButtonClick = () : void => {
         if (isAtLeastThreeChar(searchAddress)) {
-            geocoder.geocode(searchAddress, true).then((featureCollection)=>{
+            geocoder.geocode(searchAddress, true).then((featureCollection : any )=>{
                 if (isValidPolygon(featureCollection)) {
                     onResult(featureCollection.features[0])
                 } else {

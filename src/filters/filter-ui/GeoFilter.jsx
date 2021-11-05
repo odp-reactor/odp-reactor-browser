@@ -403,8 +403,13 @@ export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeG
                                 setMapUI(stopDrawFlag);
                             }
                             if (mapUIState === stopDrawFlag) {
-                                editRef.current.leafletElement._toolbars.draw._modes.circle.handler.completeShape();
-                                editRef.current.leafletElement._toolbars.draw._modes.circle.handler.disable();
+                                try {
+                                    editRef.current.leafletElement._toolbars.draw._modes.circle.handler.completeShape();
+                                    editRef.current.leafletElement._toolbars.draw._modes.circle.handler.disable();
+                                } catch (err) {
+                                    editRef.current.leafletElement._toolbars.draw._modes.circle.handler.disable();
+                                    console.log(err)
+                                }
                                 setMapUI(startDrawFlag);
                             }
                         }}
