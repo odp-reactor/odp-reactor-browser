@@ -16,5 +16,11 @@ RUN yarn build
 
 # production environment
 FROM nginx:alpine
+
+# copy static site in nginx
 COPY --from=build /app/build /usr/share/nginx/html
+# add nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# run nginx
 CMD ["nginx", "-g", "daemon off;"]
