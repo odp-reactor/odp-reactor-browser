@@ -6,10 +6,13 @@ RUN git clone https://github.com/ODPReactor/odp-reactor-browser.git /app
 WORKDIR /app
 # install dep
 RUN yarn install
+
+# copy build env
+ARG REACT_APP_LDR_URL
+ARG REACT_APP_NAME
+
 #build
 RUN yarn build
-
-
 
 # production environment
 FROM nginx:alpine

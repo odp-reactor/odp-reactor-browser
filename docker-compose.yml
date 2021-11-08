@@ -4,14 +4,14 @@ version: '3'
 
 services:
    odpreactor-browser:
-      build: .
+      build: 
+        context: .
+        args:
+        - REACT_APP_LDR_URL
+        - REACT_APP_NAME
       container_name: odpreactor-browser
       ports:
-        - "${ODPR_BROWSER_PORT-6002}:80"
-      environment:
-        - PORT=${ODPR_BROWSER_PORT-6002}
-        - REACT_APP_LDR_URL=${ODPR_LDR_URL-http://localhost:6001}
-        - REACT_APP_NAME=${ODPR-BROWSER-NAME-ODP Reactor Browser}
+        - "${PORT-6002}:80"
       env_file:
         - .env
       restart: always
