@@ -45,7 +45,8 @@ export function MobileVisualGraph({ visualGraph = [] }) {
         }
         const routeCommand = routeCommandFactory(route)
 
-        routeCommand.execute();
+        console.log(nodeProps)
+        // routeCommand.execute();
     };
 
 
