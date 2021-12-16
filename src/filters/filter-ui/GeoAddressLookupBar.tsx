@@ -68,8 +68,12 @@ export function GeoAddressLookupBar({
             onSearchButtonClick()
     }
 
+    // display: "flex",
+    // flexDirection: "row",
+    // flexFlow: "wrap",
+    // marginTop: 20,
     return (
-        <div className="" style={{ marginLeft: 20, marginBottom: 10, display: "flex" }}>
+        <div className="" style={{ marginLeft: 20, marginBottom: 0, marginTop: 10, display: "flex", flexFlow: "wrap", flexDirection: "row" }}>
             <Input
                 icon="search"
                 className="geo-search-item"
