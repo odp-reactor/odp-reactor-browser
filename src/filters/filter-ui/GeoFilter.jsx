@@ -467,7 +467,7 @@ export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeG
                     // zIndex: enlarged ? 100 : false
                 }}
             >
-                <GeoAddressLookupBar searchBarPlaceholder="search" onResult={(feature)=>{
+                <GeoAddressLookupBar searchButtonNextLine={true} searchBarPlaceholder="search location" onResult={(feature)=>{
                     const freshNewFeatureGroup = { type: "FeatureCollection", features: [] };
                     freshNewFeatureGroup.features.push(feature);
                     setFeatureGroup(freshNewFeatureGroup);

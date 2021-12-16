@@ -14,6 +14,7 @@ interface OnResulNotFoundCallback {
 
 type SearchBarPlaceholderProps = {
     searchBarPlaceholder : string,
+    searchButtonNextLine : boolean,
     onResult : OnReceivedPolygonResultCallback;
     onResultNotFound: OnResulNotFoundCallback
 }
@@ -41,6 +42,7 @@ function isValidPolygon(featureCollection: GeoJSONFeatureCollection) {
 
 export function GeoAddressLookupBar({
     searchBarPlaceholder,
+    searchButtonNextLine = false,
     onResult = ()=>{},
     onResultNotFound = ()=>{}
 } : SearchBarPlaceholderProps) {
@@ -68,8 +70,10 @@ export function GeoAddressLookupBar({
             onSearchButtonClick()
     }
 
+    const flexFlow = searchButtonNextLine ? "wrap" : "nowrap"
+
     return (
-        <div className="" style={{ marginLeft: 20, marginBottom: 10, display: "flex" }}>
+        <div className="" style={{ marginLeft: 20, marginBottom: 0, marginTop: 10, display: "flex", flexFlow: flexFlow, flexDirection: "row" }}>
             <Input
                 icon="search"
                 className="geo-search-item"
