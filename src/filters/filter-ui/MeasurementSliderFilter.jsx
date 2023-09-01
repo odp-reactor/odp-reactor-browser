@@ -76,15 +76,28 @@ export default function MeasurementSliderFilter({
 
     useEffect(() => {
         if (filter) {
+            
+            const hasDefaultConfig = range[0] === initialRange[0] && range[1] === initialRange[1] &&
+            showElementsWithMissingProperty
+            
             setFilterOptions({
                 ...filter.options,
-                hasDefaultConfig:
-                    range[0] === initialRange[0] && range[1] === initialRange[1] &&
-                    showElementsWithMissingProperty,
+                hasDefaultConfig: hasDefaultConfig,
                 filterCallback: filterAlgorithm,
             });
         }
     }, [range, showElementsWithMissingProperty]);
+
+    useEffect(()=> {
+        const hasDefaultConfig = range[0] === initialRange[0] && range[1] === initialRange[1] &&
+        showElementsWithMissingProperty
+
+        if (!hasDefaultConfig) {
+            setShowElementsWithMissingProperty(false)
+        }
+
+    }, [range])
+
 
     const onChangeElementsWithMissingPropertyFlag = (checked) => {
         setShowElementsWithMissingProperty(checked);

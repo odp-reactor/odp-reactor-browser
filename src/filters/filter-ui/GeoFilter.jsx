@@ -399,15 +399,15 @@ export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeG
                         onClick={() => {
                             if (mapUIState === startDrawFlag) {
                                 // change circle to polygon to change editing style
-                                editRef.current.leafletElement._toolbars.draw._modes.circle.handler.enable();
+                                editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.enable();
                                 setMapUI(stopDrawFlag);
                             }
                             if (mapUIState === stopDrawFlag) {
                                 try {
-                                    editRef.current.leafletElement._toolbars.draw._modes.circle.handler.completeShape();
-                                    editRef.current.leafletElement._toolbars.draw._modes.circle.handler.disable();
+                                    editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.completeShape();
+                                    editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.disable();
                                 } catch (err) {
-                                    editRef.current.leafletElement._toolbars.draw._modes.circle.handler.disable();
+                                    editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.disable();
                                     console.log(err)
                                 }
                                 setMapUI(startDrawFlag);
@@ -467,7 +467,7 @@ export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeG
                     // zIndex: enlarged ? 100 : false
                 }}
             >
-                <GeoAddressLookupBar searchBarPlaceholder="search" onResult={(feature)=>{
+                <GeoAddressLookupBar searchButtonNextLine={true} searchBarPlaceholder="search location" onResult={(feature)=>{
                     const freshNewFeatureGroup = { type: "FeatureCollection", features: [] };
                     freshNewFeatureGroup.features.push(feature);
                     setFeatureGroup(freshNewFeatureGroup);

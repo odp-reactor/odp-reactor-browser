@@ -37,6 +37,10 @@ export class KnowledgeGraphBuilder {
                     nodeBorderColor: "purple",
                     nodeType: "graphin-circle",
                     tooltipInfo: dataInfoMap[p.pattern],
+                    nodeMobileColor: "purple",
+                    // nodeMobileSize: 15,
+                    nodeBorderMobileColor: "purple",
+                    // mobileNodeType: "circle"
                 },
             });
             kg.addResource(patternResource);
@@ -80,6 +84,10 @@ export class KnowledgeGraphBuilder {
                             },
                         ],
                     },
+                    nodeMobileColor: "red",
+                    // nodeMobileSize: 15,
+                    nodeBorderMobileColor: "red",
+                    mobileNodeType: "triangle"
                 },
             });
             kg.addResource(classResource);
@@ -118,6 +126,20 @@ export class KnowledgeGraphBuilder {
                         )
                     )
                 );
+                kg.updateResourceProperty(
+                    resourceURI,
+                    "nodeMobileSize",
+                    Math.round(
+                        scaleData(
+                            kg.getResourceProperty(resourceURI, "occurences"),
+                            0,
+                            350,
+                            20,
+                            80
+                        )
+                    ) * 4
+                );
+
             }
         });
         return kg;
