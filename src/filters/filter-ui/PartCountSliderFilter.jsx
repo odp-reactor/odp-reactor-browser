@@ -1,5 +1,5 @@
 import React from "react";
-import { useKGCtx } from "../../../knowledgegraph/KGCtx/useKGCtx";
+import { useKGCtx } from "../../knowledgegraph/ctx/useKGCtx";
 
 import GenericSliderFilter from "./GenericSliderFilter";
 
@@ -10,6 +10,9 @@ export default function PartCountSliderFilter({}) {
             resources={knowledgeGraph.getResources()}
             id="parts"
             resourceProperty="parts"
+            doubleHandle={true}
+            sliderStep={1}
+            withInputBox={true}
         />
     );
 }

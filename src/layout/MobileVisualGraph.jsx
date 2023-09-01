@@ -1,7 +1,12 @@
 import React from "react";
 import { Graph } from "react-d3-graph";
+
+
+import { useRouteCommandFactory } from "../base/route/useRouteCommandFactory";
+import { useSparqlClient } from "../sparql/useSparqlClient";
+import { RouteFactory, RouteEnum } from "../base/route/RouteFactory" 
+
 export function MobileVisualGraph({ visualGraph = [] }) {
-    console.log(visualGraph);
 
     // the graph configuration, just override the ones you need
     const myConfig = {
@@ -20,14 +25,29 @@ export function MobileVisualGraph({ visualGraph = [] }) {
         },
     };
 
-    const onClickNode = function (nodeId, node) {
-        // const onNodeClick = node.data.onGraphinPatternNodeDoubleClick();
-        const onNodeClick =
-            node.data &&
-            node.data.graphinProperties &&
-            node.data.graphinProperties.graphinPatternNodeDoubleClick;
-        onNodeClick();
+
+    const { sparqlClient } = useSparqlClient() 
+    const routeCommandFactory = useRouteCommandFactory()
+    const onClickNode = function(nodeId, node) {
+
+        const nodeProps = node.data
+
+        let route;
+        const routeParams = {
+            sparqlEndpoint : sparqlClient.sparqlEndpoint,
+            graph: sparqlClient.graph,
+            uri: nodeProps.uri
+        }
+        if (nodeProps.type === "Pattern") {
+            route = RouteFactory.getRoute(RouteEnum.PATTERN_INSTANCES, routeParams)
+        } else if (nodeProps.type === "Class") {
+            route = RouteFactory.getRoute(RouteEnum.CONCEPT_INSTANCES, routeParams)
+        }
+        const routeCommand = routeCommandFactory(route)
+
+        routeCommand.execute();
     };
+
 
     const onClickLink = function (nodeId) {
         console.log(`Clicked link ${nodeId}`);

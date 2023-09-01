@@ -1,15 +1,18 @@
 import React, { useState, useRef, useEffect, useLayoutEffect } from "react";
 
 import { Map, TileLayer, FeatureGroup, GeoJSON } from "react-leaflet";
+import { GeoAddressLookupBar } from "./GeoAddressLookupBar"
 import { EditControl } from "react-leaflet-draw";
 import L from "leaflet";
+
+import hash from 'object-hash';
 
 import { useKGCtx } from "../../knowledgegraph/ctx/useKGCtx";
 import useFilter from "../../filters/ctx/useFilter";
 
 import { cloneDeep } from "lodash";
 
-import { Icon, Popup } from "semantic-ui-react";
+import { Icon, Button } from "semantic-ui-react";
 
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -19,6 +22,7 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import { blueMarkerIcon } from "../../base/icon/ld-ui-icon";
 
 import { FilterOnMapStrategy } from "../../filters/filter-algorithms/FilterOnMapStrategy";
+import { useAlertCtx } from "../../base/alert/ctx/useAlertCtx";
 
 const circleToPolygon = require("circle-to-polygon");
 const numberOfEdges = 64;
@@ -38,13 +42,16 @@ GeoFilter.defaultProps = {
 const POLYGON_CREATED = 1;
 const SHAPE_DELETED = 2;
 
-export default function GeoFilter({ id = "geo", options = {} }) {
+export default function GeoFilter({ id = "geo", options = {}, filteredKnowledgeGraph }) {
     const startDrawFlag = "Start draw";
     const stopDrawFlag = "Stop Draw";
     const [mapUIState, setMapUI] = useState(startDrawFlag);
     const [mapState, setMapState] = useState(null);
     const mapRef = useRef();
+    const groupRef = useRef()
     const editRef = useRef();
+
+    const {showAlert} = useAlertCtx()
 
     const ZOOM_LEVEL = 12;
     const MAX_ZOOM = 9;
@@ -77,8 +84,7 @@ export default function GeoFilter({ id = "geo", options = {} }) {
         });
     }
 
-    const { knowledgeGraph } = useKGCtx();
-    const resources = knowledgeGraph.getResources();
+    const resources = filteredKnowledgeGraph.getResources();
 
     let filterAlgorithm;
     const initialFilterOptions = {
@@ -98,11 +104,11 @@ export default function GeoFilter({ id = "geo", options = {} }) {
         (filter && filter.getStrategyOption("featureGroup")) ||
             initialFeatureGroup
     );
+
     const thereIsActiveSelection =
         featureGroup &&
         featureGroup.features &&
         featureGroup.features.length > 0;
-    console.log("There is active selection?", thereIsActiveSelection);
 
     filterAlgorithm = FilterOnMapStrategy.create({
         featureGroup,
@@ -121,11 +127,33 @@ export default function GeoFilter({ id = "geo", options = {} }) {
         }
     }, [featureGroup]);
 
+    const isSearchBarLayer = (layer) => {
+        // bbox is a prop returned from nominatim.openstreetmap API
+        // this is a shit approach to detect the address layer
+        return layer.feature && layer.feature.bbox
+    }
+
     // prepare map
     useEffect(() => {
         if (mapRef.current) {
             const map = mapRef.current.leafletElement;
             const mcg = L.markerClusterGroup();
+
+            let searchBarLayer;
+
+            // we use this id to remove previous layer and add new one
+            mcg.deleteId = "marker-data-layer-to-replace"
+            map.eachLayer((layer) => {
+
+                if (isSearchBarLayer(layer)) {
+                    searchBarLayer = layer
+                }
+
+                if (layer.deleteId === "marker-data-layer-to-replace") {
+                    map.removeLayer(layer)
+                }
+            })
+
             mcg.clearLayers();
 
             resources.forEach((node) => {
@@ -136,13 +164,53 @@ export default function GeoFilter({ id = "geo", options = {} }) {
                     // .bindPopup(L.popup().setContent(customPopup).setLatLng([node.lat, node.long]))
                 }
             });
-            map.fitBounds(mcg.getBounds(), {
-                padding: [120, 120],
-                maxZoom: 8,
-            });
             map.addLayer(mcg);
+            try {
+                // if there are nodes fit to them
+                if (resources.length > 0) {
+                    map.fitBounds(mcg.getBounds(), {
+                    padding: [20, 20],
+                    maxZoom: 8,
+                    });
+                } else {
+                    // if there are no nodes try to fit to searched area to show user the area
+                    map.fitBounds(searchBarLayer.getBounds())
+                }
+            } catch(e) {
+                console.log(e)
+            }
         }
-    }, [mapRef]);
+    }, [mapRef, filteredKnowledgeGraph]);
+
+    useEffect(()=>{
+
+        // this effect runs when map is elarged or moved back
+        // it recreates virtually the markerclusterlayer with points
+        // and fit the map to virtual layer bounds
+        // thus when you open/close the map it always feet points 
+
+        if (mapRef.current) {
+            const map = mapRef.current.leafletElement;
+            const mcg = L.markerClusterGroup();
+            mcg.clearLayers();
+            resources.forEach((node) => {
+                if (node.lat && node.long) {
+                    L.marker([node.lat, node.long], {
+                        icon: blueMarkerIcon,
+                    }).addTo(mcg);
+                    // .bindPopup(L.popup().setContent(customPopup).setLatLng([node.lat, node.long]))
+                }
+            });
+            try {
+                map.fitBounds(mcg.getBounds(), {
+                    padding: [20, 20],
+                    maxZoom: 8,
+                });
+            } catch(e) {
+                console.log(e)
+            }
+        }
+    }, [enlarged])
 
     const onFilterCreated = (e) => {
         const l = e.layer;
@@ -243,17 +311,32 @@ export default function GeoFilter({ id = "geo", options = {} }) {
     //     // mapRef.current.leafletElement.invalidateSize();
     // }, [enlarged]);
 
-    useResetFilter(() => {
+    // use this with reset button outside of the React draw leaflet editor
+    const clearNotWithLibraryButton = () => {
         // startDelete
         editRef.current.leafletElement._toolbars.edit._modes.remove.handler.enable();
         // saveDelete
         editRef.current.leafletElement._toolbars.edit._modes.remove.handler.removeAllLayers();
         editRef.current.leafletElement._toolbars.edit._modes.remove.handler.disable();
         setMapState({ id: SHAPE_DELETED, e: null });
-    });
+    }
+
+    useResetFilter(clearNotWithLibraryButton);
+
 
     return (
         <div>
+        <div style={{
+            cursor: !enlarged ? "pointer" : ""
+        }}
+        onClick={() => {
+            if (!enlarged)
+                setEnlarged(true)
+        }}
+        className={`enlarge-map-button ${
+            enlarged ? "dispatch-map-resize" : ""
+        }`}
+        >
             <Map
                 zoomControl={false}
                 center={center}
@@ -267,9 +350,12 @@ export default function GeoFilter({ id = "geo", options = {} }) {
                     border: "2px solid rgb(54, 48, 74)",
                     borderRadius: 4,
                     zIndex: 4,
+                    pointerEvents: !enlarged ? "none" : "auto"
                 }}
             >
-                <FeatureGroup>
+                <FeatureGroup
+                    ref={groupRef}
+                >
                     <EditControl
                         ref={editRef}
                         position="topright"
@@ -285,7 +371,7 @@ export default function GeoFilter({ id = "geo", options = {} }) {
                             polygon: true,
                         }}
                     />
-                    <GeoJSON data={featureGroup} />
+                    <GeoJSON key={hash(featureGroup)} data={featureGroup} color="blue"/>
                 </FeatureGroup>
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
@@ -312,12 +398,18 @@ export default function GeoFilter({ id = "geo", options = {} }) {
                         className="map-button edit-button"
                         onClick={() => {
                             if (mapUIState === startDrawFlag) {
+                                // change circle to polygon to change editing style
                                 editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.enable();
                                 setMapUI(stopDrawFlag);
                             }
                             if (mapUIState === stopDrawFlag) {
-                                editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.completeShape();
-                                editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.disable();
+                                try {
+                                    editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.completeShape();
+                                    editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.disable();
+                                } catch (err) {
+                                    editRef.current.leafletElement._toolbars.draw._modes.polygon.handler.disable();
+                                    console.log(err)
+                                }
                                 setMapUI(startDrawFlag);
                             }
                         }}
@@ -341,69 +433,50 @@ export default function GeoFilter({ id = "geo", options = {} }) {
                     )}
                 </div>
             )}
+            {
+                enlarged &&             
+                <div
+                    className="map-button search-map-button"
+
+                        style={{
+                        // display: "flex",
+                        // flexDirection: "row",
+                        // flexFlow: "wrap",
+                        // marginTop: 20,
+                        // zIndex: enlarged ? 100 : false
+                    }}
+                >
+                    <GeoAddressLookupBar searchBarPlaceholder="search" onResult={(feature)=>{
+                        const freshNewFeatureGroup = { type: "FeatureCollection", features: [] };
+                        freshNewFeatureGroup.features.push(feature);
+                        setFeatureGroup(freshNewFeatureGroup);
+                    }}
+                    onResultNotFound={(address)=>{
+                        showAlert(`Address ${address} is not valid`, true)
+                    }}/>
+                </div>
+
+            }
+            </div>
             <div
                 style={{
                     display: "flex",
-                    flexDirection: "column",
-                    width: "fit-content",
-                    float: "right",
-                    top: -100,
-                    position: "relative",
+                    flexDirection: "row",
+                    flexFlow: "wrap",
+                    marginTop: 20,
+                    // zIndex: enlarged ? 100 : false
                 }}
             >
-                <Popup
-                    trigger={
-                        <div
-                            className={`${
-                                thereIsActiveSelection
-                                    ? "enlarge-map-button"
-                                    : "enlarged-map-button-hidden"
-                            } ${enlarged ? "enlarged-map-button-hidden" : ""}`}
-                            style={{
-                                zIndex: 1500,
-                                width: "fitContent",
-                                cursor: "pointer",
-                            }}
-                            onClick={() => {
-                                // startDelete
-                                editRef.current.leafletElement._toolbars.edit._modes.remove.handler.enable();
-                                // saveDelete
-                                editRef.current.leafletElement._toolbars.edit._modes.remove.handler.removeAllLayers();
-                                editRef.current.leafletElement._toolbars.edit._modes.remove.handler.disable();
-                                setMapState({ id: SHAPE_DELETED, e: null });
-                            }}
-                        >
-                            <Icon name="delete" size="huge" color="red" />
-                        </div>
-                    }
-                    on={["hover"]}
-                    content={"Clear previous selection"}
-                    position="left center"
-                    inverted
+                <GeoAddressLookupBar searchButtonNextLine={true} searchBarPlaceholder="search location" onResult={(feature)=>{
+                    const freshNewFeatureGroup = { type: "FeatureCollection", features: [] };
+                    freshNewFeatureGroup.features.push(feature);
+                    setFeatureGroup(freshNewFeatureGroup);
+                }}
+                onResultNotFound={(address)=>{
+                    showAlert(`Address ${address} is not valid`, true)
+                }}
                 />
-                <Popup
-                    trigger={
-                        <div
-                            className={`enlarge-map-button ${
-                                enlarged ? "enlarged-map-button-hidden" : ""
-                            }`}
-                            style={{
-                                zIndex: 1500,
-                                width: "fitContent",
-                                cursor: "pointer",
-                            }}
-                            onClick={() => {
-                                setEnlarged(true);
-                            }}
-                        >
-                            <Icon name="expand" size="huge" color="black" />
-                        </div>
-                    }
-                    on={["hover"]}
-                    content={"Expand Map"}
-                    position="left center"
-                    inverted
-                />
+                {thereIsActiveSelection && <div style={{marginLeft: 20}}><Button onClick={clearNotWithLibraryButton} color="red">Clear</Button></div>}
             </div>
         </div>
     );

@@ -1,3 +1,9 @@
+.slider-filter-input {
+    max-width: 50px;
+    text-align: center;
+}
+
+
 .ui.table td {
     padding: 0px;
 }
@@ -141,8 +147,8 @@ i.show-help {
 
 .button-container {
     position: fixed;
-    left: 550px;
-    top: 530px;
+    left: 40vw;
+    top: 85vh;
     /* background-color: lightskyblue; */
     width: fit-content;
     display: flex;
@@ -182,6 +188,19 @@ i.show-help {
     opacity: 1;
     width: fit-content;
     padding: 15px;
+}
+
+.search-map-button {
+    position:  fixed;
+    opacity: 1;
+    top: 30px;
+    left: 35vw;
+    padding: 0;
+    background-color: "none";
+    border-radius: 0;
+    width: 0;
+    margin: 0;
+    height: 0;
 }
 
 .enlarged-map-button-hidden {
@@ -250,4 +269,11 @@ i.show-help {
 
 .item.menu-item.filter-item.filter-filter-flag {
     display: none;
+}
+
+
+.graphin-components-tooltip {
+    position: absolute !important;
+    top: 5vh !important;
+    left: 7vw !important;
 }

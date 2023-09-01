@@ -1,6 +1,6 @@
 import { QueryBuilder } from "../base/query/QueryBuilder";
 
-export class PatternQueryBuilder extends QueryBuilder {
+export class  PatternQueryBuilder extends QueryBuilder {
     getPatternsWithRelations() {
         return `
         ${this.getPrefixes()}

@@ -13,6 +13,7 @@ import { SparqlEndpointRepository } from "../sparql/SparqlEndpointRepository"
 import { useSparqlClient } from "../sparql/useSparqlClient"
 import { useRouteCommandFactory } from "../base/route/useRouteCommandFactory";
 import { RouteFactory, RouteEnum } from "../base/route/RouteFactory";
+import { showSpinner } from "./showSpinner";
 
 /**
  * You can modify max-height to change table height and eventually remove max-height in
@@ -50,13 +51,14 @@ const clearRowLight = (e) => {
     }
 };
 
+
+
 export default function List({
     list,
     title,
     itemTooltip = "click to explore resources",
     listContainerStyle = {},
 }) {
-    console.log("[*] List:", list);
 
     const { sparqlClient } = useSparqlClient()
     const sparqlEndpointRepo = new SparqlEndpointRepository()
@@ -74,6 +76,9 @@ export default function List({
             uri: uri
         }
         const routeCommand = routeCommandFactory(RouteFactory.getRoute(RouteEnum.RESOURCE, routeParams))
+
+
+        showSpinner()
         routeCommand.execute()
     }
 

@@ -1,0 +1,19 @@
+.hide-odpr-container {
+    display: none;
+}
+
+
+.odpr-spinner {
+    visibility: hidden;
+}
+
+.display-odpr-spinner {
+    visibility: visible;
+    background-color: "white";
+    z-index: 50;
+    width: "100vw";
+    height: "100vh";
+    position: "absolute";
+    top: 0;
+
+}

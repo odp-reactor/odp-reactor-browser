@@ -1,0 +1,17 @@
+# an example docker compose.yml tweak environment file according to your deploy
+
+version: '3'
+
+services:
+   odpreactor-browser:
+      build: 
+        context: .
+        args:
+        - REACT_APP_LDR_URL
+        - REACT_APP_NAME
+      container_name: odpreactor-browser
+      ports:
+        - "${PORT-6002}:80"
+      env_file:
+        - .env
+      restart: always

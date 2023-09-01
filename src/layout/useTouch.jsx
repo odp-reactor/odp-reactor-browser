@@ -5,9 +5,7 @@ export function useTouch() {
 
     useEffect(() => {
         function handleResize() {
-            console.log("I should handle resize");
             const isStillTouch = isTouchDevice();
-            console.log("touch:", isStillTouch);
             if (isTouch !== isStillTouch) {
                 setIsTouch(isStillTouch);
             }

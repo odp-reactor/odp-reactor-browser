@@ -6,7 +6,7 @@ export class RouteCommand {
     static create({ router, route }) {
         return new RouteCommand(router, route);
     }
-    execute() {
+    execute() {        
         this.router.navigateTo(this.route);
     }
 }
